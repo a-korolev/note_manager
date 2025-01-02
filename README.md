@@ -1,1 +1,1 @@
-# Note manager
+# Note Manager
