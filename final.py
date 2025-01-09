@@ -1,6 +1,12 @@
-# final.py
-# Grade 1. Этап 1. Задание 5.
-# Список для хранения данных заметки.
+"""final.py
+Grade 1. Этап 1. Задание 5.
+Список для хранения данных заметки.
+
+Все данные организованы в словарь для заметки, включая:
+Поля: username, content, status, created_date, issue_date.
+Список заголовков как значение ключа titles.
+Все данные выводятся на экран в структурированном виде.
+"""
 
 # Ввод данных пользователем для создания заметки
 username = input('Введите имя пользователя: ')
@@ -17,25 +23,25 @@ created_date = input('Введите дату создания заметки в
 issue_date = input('Введите дату истечения заметки в формате день-месяц-год, (например, 03-01-2025): ')
 
 # Создание и инициализация списка для хранения данных заметки
-note = [
-    username,
-    titles,
-    content,
-    status,
-    created_date,
-    issue_date,
-]
+note = {
+    'username': username,
+    'titles': titles,
+    'content': content,
+    'status': status,
+    'created_date': created_date,
+    'issue_date': issue_date,
+}
 
 # Вывод данных введенных пользователем
 print('\nВведенные данные:')
-print('Имя пользователя:', note[0])
+print('Имя пользователя:', note['username'])
 print('Заголовки заметки:')
 
 # Вывод списка заголовков в цикле
-for index, title in enumerate(note[1]):
+for index, title in enumerate(note['titles']):
     print(f'\tЗаголовок {index + 1}: {title}')
 
-print('Описание заметки:', note[2])
-print('Статус заметки:', note[3])
-print('Дата создания заметки:', note[4])  # Вывод даты создания
-print('Дата истечения заметки:', note[5])  # Вывод даты истечения
+print('Описание заметки:', note['content'])
+print('Статус заметки:', note['status'])
+print('Дата создания заметки:', note['created_date'])  # Вывод даты создания
+print('Дата истечения заметки:', note['issue_date'])  # Вывод даты истечения
