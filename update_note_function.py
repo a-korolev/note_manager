@@ -1,11 +1,15 @@
 """update_note_function.py
 Grade 1. Этап 3. Задание 2.
-Функция обновления заметки.
+Функция обновления заметки update_note().
 
 Функциональность:
 Функция корректно принимает заметку в качестве аргумента.
 Пользователь может выбрать поле для обновления.
 Поле обновляется с учётом корректности введённого значения (например, проверка формата для даты).
+Используется цикл для обработки повторного ввода в случае ошибки.
+Валидация issue_date() выделена в отдельную функцию.
+Реализовано подтверждение обновления полей.
+Обеспечивает обновление нескольких полей за один вызов функции.
 Возвращается обновлённый словарь заметки.
 """
 from datetime import datetime
@@ -23,14 +27,23 @@ note = {
     'issue_date': '08-01-2025',
 }
 
+# Словарь с измененными полями заметки
 note_fields_updated = {}
 
 # Кортеж содержащий возможные статусы заметки
 statuses = ('Отменить ввод', 'Активна', 'В процессе', 'Отложено', 'Выполнено')
 
+def get_user_input_end() -> None:
+    get_user_input_end_with_param(note)
 
-def get_user_input_end():
-    global note
+def get_user_input_end_with_param(note) -> None:
+    """
+    Окончание ввода данных для обновления заметки и сохранение измененных полей при положительном ответе пользователя на запрос сохранения изменений
+
+    :param: note: dict - изменяемый словарь заметки
+    :return: None
+    """
+
     if note_fields_updated:
         while True:
             user_answer = get_user_confirm_update()
@@ -39,6 +52,7 @@ def get_user_input_end():
                 break
             elif user_answer == 'да':
                 print('\nЗаметка обновлена')
+                # Обновление словаря заметки словарем содержащий обновленные поля
                 note |= note_fields_updated
                 break
 
@@ -46,17 +60,23 @@ def get_user_input_end():
         print('\nНет полей для обновления. Заметка не обновлена.')
 
 
-def get_user_confirm_update():
+def get_user_confirm_update() -> str:
+    """
+    Запрос подтверждения на сохранение обновленных полей
+
+    :return: user_answer: str - значение введенное пользователем (да/нет)
+    """
     user_answer = input('Вы уверены, что хотите обновить поля заметки? (да/нет): ').strip().lower()
     return user_answer
 
+
 def get_user_input(label: str = 'Введите данные: ') -> str:
     """
-    Ввод имени пользователя.
+    Ввод строковых данных для полей заметки. Делает проверку на пустой ввод.
 
     Проверка на пустой ввод
     :param label: str - заголовок для ввода
-    :return: result: str - Возвращает введенное имя пользователя
+    :return: result: str - Возвращает введенное пользователем строковое значение
     """
     result = ''
     while not result:
@@ -66,20 +86,40 @@ def get_user_input(label: str = 'Введите данные: ') -> str:
     return result
 
 
-def get_user_input_username():
+def get_user_input_username() -> str:
+    """
+    Ввод имени пользователя
+
+    :return: str: возвращает введенное значение
+    """
     return get_user_input('Введите имя пользователя: ')
 
 
-def get_user_input_title():
+def get_user_input_title() -> str:
+    """
+    Ввод заголовка
+
+    :return: str: возвращает введенное значение
+    """
     return get_user_input('Введите заголовок: ')
 
 
-def get_user_input_content():
+def get_user_input_content() -> str:
+    """
+    Ввод содержания
+
+    :return: str: возвращает введенное значение
+    """
     return get_user_input('Введите содержание: ')
 
 
-def get_user_input_satus():
-    result = ''
+def get_user_input_satus() -> str:
+    """
+    Отображение меню и ввод пользователем статуса
+
+    :return: str: - название выбранного пользователем статуса или пустая строка если отмена ввода
+    """
+
     # Вывод меню для выбора нового статуса
     print_status_menu()
 
@@ -174,7 +214,7 @@ def select_note_status() -> int:
     """
     while True:
         selected_status = input('Ваш выбор: ').strip()
-        #if selected_status == '' or selected_status == '0':
+
         if selected_status == '0':
             selected_status = 0
             break
@@ -193,6 +233,7 @@ def select_note_status() -> int:
     return selected_status
 
 
+# Список словарей с описанием кодов, заголовков и функций лдя обработки ввода данных полей заметки
 note_fields = [
     {'field_code': 'input_end', 'field_title': 'Сохранить изменения и выйти', 'field_input_fn': get_user_input_end},
     {'field_code': 'username', 'field_title': 'Имя пользователя', 'field_input_fn': get_user_input_username},
@@ -217,8 +258,6 @@ def display_note(note: dict, date_format: str):
     print('Заголовок:', note['title'])
     print('Описание заметки:', note['content'])
     print('Статус заметки:', note['status'])
-    # print('Дата создания заметки:', note['created_date'].strftime(date_format))  # Вывод даты создания
-    # print('Дата истечения заметки:', note['issue_date'].strftime(date_format))  # Вывод даты истечения
     print('Дата создания заметки:', note['created_date'])  # Вывод даты создания
     print('Дата истечения заметки:', note['issue_date'])  # Вывод даты истечения
 
@@ -244,23 +283,18 @@ def display_update_fields_menu(note_fields):
     field = note_fields[index]
     print(f'{index}. {field['field_title']}')  # {field['field_code']}')
 
-    # for key, value in note_fields.items():
-    #     print(f'{key}. {value}')
 
+def get_user_choice_field() -> int:
+    """
+    Выбор пользователем поле для обновления данных и вызов соответствующей функцииввода
 
-# def test():
-#     print('test_fn')
-# test_fn = test
-# test_fn_arr = [test_fn, test_fn]
-
-def get_user_choice_field():
-    # note_fields_selected = []
+    :return: result: int - индекс выбранного пункта в меню полей заметки
+    """
     result = 0
 
     while not result:
         user_choice = input('Для обновления данных, выберите поле (введите номер или название поле): ').strip()
 
-        #if user_choice == '' or user_choice == '0':
         if user_choice == '0':
             break
         if user_choice.isdigit():
@@ -269,30 +303,29 @@ def get_user_choice_field():
                 break
         elif user_choice.replace(' ', '').isalnum():
             for key, note_field in enumerate(note_fields):
-                if note_field['field_code'].lower() == user_choice.lower():
+                if str(note_field['field_code']).lower() == user_choice.lower():
                     result = key
                     break
 
     return result
 
 
-def update_note(note):
-    #note_fields_updated = {}
+def update_note(note) -> dict:
+    """
+    Обновление полей заметки
 
+    :param note: dict - словарь с данными заметки для обновления
+    :return: обновленная заметка
+    """
     while True:
         display_update_fields_menu(note_fields)
         user_choice_field = get_user_choice_field()
-        # print(user_choice, type(user_choice))
         user_choice_data = note_fields[user_choice_field]['field_input_fn']()
 
         if user_choice_field == 0:
             break
         elif user_choice_data:
             note_fields_updated[note_fields[user_choice_field]['field_code']] = user_choice_data
-            #print(note_fields_updated)
-            #note |= note_fields_updated
-        # else:
-        #     break
 
     return note
 
