@@ -14,19 +14,19 @@ Grade 1. Этап 3. Задание 1.
 from datetime import datetime
 from datetime import timedelta
 
-# Константы
-# TODO: move constants to a separate file
-C_DATE_FORMAT: str = '%d-%m-%Y'
-C_DATE_NOTE_PRINT_FORMAT: str = '%d-%m'
-C_INPUT_TITLES = 'Ввод заголовков заметки:'
-C_INPUT_TITLE = f'Введите заголовок (введите \'стоп\'' \
-                'или оставьте пустым для завершения: '
-C_ALREADY_EXIST_TITLE = 'Внимание! Такой заголовок уже существует. Повторите ввод.'
-C_EMPTY_STRING = ''
-C_STOP_WORD = 'стоп'
-
-# Кортеж содержащий возможные статусы заметки
-statuses = ('Новая', 'В процессе', 'Отложена', 'Выполнена')
+# # Константы
+# # TODO: move constants to a separate file
+# C_DATE_FORMAT: str = '%d-%m-%Y'
+# C_DATE_NOTE_PRINT_FORMAT: str = '%d-%m'
+# C_INPUT_TITLES = 'Ввод заголовков заметки:'
+# C_INPUT_TITLE = f'Введите заголовок (введите \'стоп\'' \
+#                 'или оставьте пустым для завершения: '
+# C_ALREADY_EXIST_TITLE = 'Внимание! Такой заголовок уже существует. Повторите ввод.'
+# C_EMPTY_STRING = ''
+# C_STOP_WORD = 'стоп'
+#
+# # Кортеж содержащий возможные статусы заметки
+# statuses = ('Новая', 'В процессе', 'Отложена', 'Выполнена')
 
 
 def get_user_input(label: str = 'Введите данные: ') -> str:
@@ -145,7 +145,7 @@ def get_user_input_date(subtitle: str = '', is_default_input_allowed: bool = Fal
         input_date = input(
             f'Введите дату {subtitle} (в формате {replace_format_string_to_word(C_DATE_FORMAT)}): ').strip()
 
-        if is_default_input_allowed:
+        if not input_date and is_default_input_allowed:
             input_date = (get_current_date() + timedelta(offset_days_value)).strftime(C_DATE_FORMAT)
             is_valid_date = True
         else:
@@ -229,6 +229,19 @@ def create_note() -> dict:
 
 
 if __name__ == '__main__':
+    # Константы
+    C_DATE_FORMAT: str = '%d-%m-%Y'
+    C_DATE_NOTE_PRINT_FORMAT: str = '%d-%m'
+    C_INPUT_TITLES = 'Ввод заголовков заметки:'
+    C_INPUT_TITLE = f'Введите заголовок (введите \'стоп\'' \
+                    'или оставьте пустым для завершения: '
+    C_ALREADY_EXIST_TITLE = 'Внимание! Такой заголовок уже существует. Повторите ввод.'
+    C_EMPTY_STRING = ''
+    C_STOP_WORD = 'стоп'
+
+    # Кортеж содержащий возможные статусы заметки
+    statuses = ('Новая', 'В процессе', 'Отложена', 'Выполнена')
+
     # Создание новой заметки
     new_note = create_note()
 
