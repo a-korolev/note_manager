@@ -14,27 +14,10 @@ Grade 1. Этап 3. Задание 2.
 """
 from datetime import datetime
 
-# Константы
-C_DATE_FORMAT: str = '%d-%m-%Y'
-
-# Словарь с данными заметки
-note = {
-    'username': 'Иван',
-    'title': 'Отдых',
-    'content': 'Путешествие, рыбалка, экскурсии',
-    'status': 'Активна',
-    'created_date': '01-01-2025',
-    'issue_date': '08-01-2025',
-}
-
-# Словарь с измененными полями заметки
-note_fields_updated = {}
-
-# Кортеж содержащий возможные статусы заметки
-statuses = ('Отменить ввод', 'Активна', 'В процессе', 'Отложено', 'Выполнено')
 
 def get_user_input_end() -> None:
     get_user_input_end_with_param(note)
+
 
 def get_user_input_end_with_param(note) -> None:
     """
@@ -331,11 +314,30 @@ def update_note(note) -> dict:
 
 
 if __name__ == '__main__':
+    # Константы
+    C_DATE_FORMAT: str = '%d-%m-%Y'
+
+    # Словарь с данными заметки
+    note = {
+        'username': 'Иван',
+        'title': 'Отдых',
+        'content': 'Путешествие, рыбалка, экскурсии',
+        'status': 'Активна',
+        'created_date': '01-01-2025',
+        'issue_date': '08-01-2025',
+    }
+
+    # Словарь с измененными полями заметки
+    note_fields_updated = {}
+
+    # Кортеж содержащий возможные статусы заметки
+    statuses = ('Отменить ввод', 'Активна', 'В процессе', 'Отложено', 'Выполнено')
+
     print('\nОбновление заметки')
 
     # Вывод данных заметки до обновления
     display_note(note, C_DATE_FORMAT)
     # Обновление заявки
-    note = update_note(note)
+    updated_note = update_note(note)
     # Вывод данных заметки после обновления
-    display_note(note, C_DATE_FORMAT)
+    display_note(updated_note, C_DATE_FORMAT)
