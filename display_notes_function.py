@@ -8,40 +8,61 @@ Grade 1. Этап 3. Задание 3.
 Вывод удобен для чтения.
 """
 
+from datetime import datetime
+from colorama import init, Fore
 
-def display_notes(notes: list = None):
-    if notes is None:
-        notes = []
+type Notes = list[dict[str | str] | dict[str, str]]
 
-    if notes:
-        for note in notes:
-            display_note(note)
+C_DATE_FORMAT: str = '%d-%m-%Y'
+
+
+def display_notes(notes: Notes, full_mode: bool = True, sort_field_name: str = '', sort_reverse: bool = False) -> None:
+    """
+
+    :param notes:
+    :param full_mode:
+    :param sort_field_name:
+    :param sort_reverse:
+    :return:
+    """
+    init(autoreset=True)
+
+    print(f'\n{Fore.BLUE}Текущий список заметок:')
+    print('-' * 80)
+
+    if sort_field_name:
+        if sort_field_name == 'created_date' or sort_field_name == 'issue_date':
+            notes_list.sort(key=lambda field: datetime.strptime(field[sort_field_name], C_DATE_FORMAT),
+                            reverse=sort_reverse)
+        else:
+            notes_list.sort(key=lambda field: field[sort_field_name], reverse=sort_reverse)
+
+    if len(notes) > 0:
+        for key, note in enumerate(notes, start=1):
+            # display_note(note, key)
+            print(f'{Fore.YELLOW}Заметка №{key}:')
+
+            if full_mode:
+                # print('Имя пользователя:', f'{Fore.CYAN}{note.get('username', f'{Fore.RED}<не определено>')}')
+                print(f'{'Имя пользователя:':18}{Fore.CYAN}{note.get('username', f'{Fore.RED}<не определено>')}')
+                print(f'{'Заголовок:':18}{Fore.CYAN}{note.get('title', f'{Fore.RED}<не определено>')}')
+                print(f'{'Описание:':18}{Fore.CYAN}{note.get('content', f'{Fore.RED}<не определено>')}')
+                print(f'{'Статус:':18}{Fore.CYAN}{note.get('status', f'{Fore.RED}<не определено>')}')
+                print(f'{'Дата создания:':18}{Fore.CYAN}{note.get('created_date', f'{Fore.RED}<не определено>')}')
+                print(f'{'Дедлайн:':18}{Fore.CYAN}{note.get('issue_date', f'{Fore.RED}<не определено>')}')
+            else:
+                print(f'{'Заголовок:':11}{Fore.CYAN}{note.get('title', f'{Fore.RED}<не определено>')}')
+
+            print('-' * 80)
+
     else:
         print('У вас нет сохранённых заметок.')
 
 
-def display_note(note: dict) -> None:
-    """
-    Выводит данные заметки.
-
-    :param note: dict - словарь содержащий данные заметки
-    :return: None
-    """
-    print(f'Заметка №{note['ID']}:')
-    print('Имя пользователя:', note.get('username', '<не определено>'))
-    print('Заголовок:', note.get('title', '<не определено>'))
-    print('Описание:', note.get('content', '<не определено>'))
-    print('Статус:', note.get('status', '<не определено>'))
-    print('Дата создания:', note.get('created_date', '<не определено>'))
-    print('Дедлайн:', note.get('issue_date', '<не определено>'))
-    print('-' * 80)
-
-
 if __name__ == '__main__':
     # Список текущих заметок
-    notes = [
+    notes_list: Notes = [
         {
-            'ID': 1,
             'username': 'Иван',
             'title': 'Учеба',
             'content': 'Обучение',
@@ -50,7 +71,6 @@ if __name__ == '__main__':
             'issue_date': '15-01-2025',
         },
         {
-            'ID': 2,
             'username': 'Петр',
             'title': 'Практика',
             'content': 'Обучение',
@@ -59,7 +79,6 @@ if __name__ == '__main__':
             'issue_date': '26-10-2025',
         },
         {
-            'ID': 3,
             'username': 'Иван',
             'title': 'Рыбалка',
             'content': 'Отдых',
@@ -68,7 +87,6 @@ if __name__ == '__main__':
             'issue_date': '08-01-2025',
         },
         {
-            'ID': 4,
             'username': 'Зинаида',
             'title': 'Учеба',
             'content': 'Школа',
@@ -77,7 +95,6 @@ if __name__ == '__main__':
             'issue_date': '25-12-2024',
         },
         {
-            'ID': 5,
             'username': 'Петр',
             'title': 'Спорт',
             'content': 'Отдых',
@@ -87,15 +104,5 @@ if __name__ == '__main__':
         },
     ]
 
-
-    def print_notes_title() -> None:
-        """
-        Функция выводит заголовок списка заметок
-
-        :return: None
-        """
-        print('\nТекущий список заметок:')
-        print('-' * 80)
-
-    print_notes_title()
-    display_notes(notes)
+    # Вызов функции отображения заметок
+    display_notes(notes_list, full_mode=True, sort_field_name='issue_date', sort_reverse=False)
