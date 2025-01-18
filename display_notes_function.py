@@ -34,7 +34,7 @@ def display_notes(notes: Notes, full_mode: bool = True, sort_field_name: str = '
     :param full_mode: Формат вывода. True (по умолчанию) - полные данные. False - только заголовки.
     :param sort_field_name: Имя поля для сортировки (по умолчанию без сортировки).
     :param sort_reverse: Направление сортировки (по умолчанию по возрастанию).
-    :param notes_per_page: Количество страниц на странице.
+    :param notes_per_page: Количество страниц на странице. 0 - постраничный вывод отключен.
     :return: None
     """
     init(autoreset=True)
@@ -54,7 +54,10 @@ def display_notes(notes: Notes, full_mode: bool = True, sort_field_name: str = '
     notes_per_page = abs(notes_per_page)
     current_note_per_page_counter = notes_per_page
     current_page_counter = 1
-    page_count = math.ceil(len(notes) / notes_per_page)
+    if notes_per_page != 0:
+        page_count = math.ceil(len(notes) / notes_per_page)
+    else:
+        page_count = 0
 
     if len(notes) > 0:
         for key, note in enumerate(notes, start=1):
@@ -80,7 +83,9 @@ def display_notes(notes: Notes, full_mode: bool = True, sort_field_name: str = '
                 current_note_per_page_counter = notes_per_page
                 current_page_counter += 1
 
-        print(f'Страница [{current_page_counter}/{page_count}]')
+        if notes_per_page != 0:
+            print(f'Страница [{current_page_counter}/{page_count}]')
+
     else:
         print('У вас нет сохранённых заметок.')
 
