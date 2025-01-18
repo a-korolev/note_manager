@@ -8,28 +8,41 @@ Grade 1. Этап 3. Задание 3.
 Вывод удобен для чтения.
 """
 
-from datetime import datetime
+import math
 from colorama import init, Fore
+from datetime import datetime
 
 type Notes = list[dict[str | str] | dict[str, str]]
 
 C_DATE_FORMAT: str = '%d-%m-%Y'
 
 
-def display_notes(notes: Notes, full_mode: bool = True, sort_field_name: str = '', sort_reverse: bool = False) -> None:
+def display_notes(notes: Notes, full_mode: bool = True, sort_field_name: str = '', sort_reverse: bool = False,
+                  notes_per_page: int = 0) -> None:
     """
+    Функция вывода текущего списка заметок
 
-    :param notes:
-    :param full_mode:
-    :param sort_field_name:
-    :param sort_reverse:
-    :return:
+    Функциональность:
+    Функция корректно обрабатывает пустой список заметок.
+    Реализована поддержка цветного вывода.
+    Заметки выводятся в указанном формате только заголовки или полные данные, с номерами и разделителями.
+    Позволяет сортировать список с указанием направления и поля сортировки.
+    Поддерживает вывод заметок в формате таблицы.
+    Возможность постраничного вывода.
+
+    :param notes: Список заметок для вывода
+    :param full_mode: Формат вывода. True (по умолчанию) - полные данные. False - только заголовки.
+    :param sort_field_name: Имя поля для сортировки (по умолчанию без сортировки).
+    :param sort_reverse: Направление сортировки (по умолчанию по возрастанию).
+    :param notes_per_page: Количество страниц на странице.
+    :return: None
     """
     init(autoreset=True)
 
     print(f'\n{Fore.BLUE}Текущий список заметок:')
     print('-' * 80)
 
+    # Сортировка списка если указано поле
     if sort_field_name:
         if sort_field_name == 'created_date' or sort_field_name == 'issue_date':
             notes_list.sort(key=lambda field: datetime.strptime(field[sort_field_name], C_DATE_FORMAT),
@@ -37,13 +50,18 @@ def display_notes(notes: Notes, full_mode: bool = True, sort_field_name: str = '
         else:
             notes_list.sort(key=lambda field: field[sort_field_name], reverse=sort_reverse)
 
+    # Значения и переменные для постраничного ввода
+    notes_per_page = abs(notes_per_page)
+    current_note_per_page_counter = notes_per_page
+    current_page_counter = 1
+    page_count = math.ceil(len(notes) / notes_per_page)
+
     if len(notes) > 0:
         for key, note in enumerate(notes, start=1):
-            # display_note(note, key)
+
             print(f'{Fore.YELLOW}Заметка №{key}:')
 
             if full_mode:
-                # print('Имя пользователя:', f'{Fore.CYAN}{note.get('username', f'{Fore.RED}<не определено>')}')
                 print(f'{'Имя пользователя:':18}{Fore.CYAN}{note.get('username', f'{Fore.RED}<не определено>')}')
                 print(f'{'Заголовок:':18}{Fore.CYAN}{note.get('title', f'{Fore.RED}<не определено>')}')
                 print(f'{'Описание:':18}{Fore.CYAN}{note.get('content', f'{Fore.RED}<не определено>')}')
@@ -55,6 +73,14 @@ def display_notes(notes: Notes, full_mode: bool = True, sort_field_name: str = '
 
             print('-' * 80)
 
+            current_note_per_page_counter -= 1
+
+            if key < len(notes) and current_note_per_page_counter == 0:
+                input(f'Страница [{current_page_counter}/{page_count}] Нажмите Enter для продолжения...')
+                current_note_per_page_counter = notes_per_page
+                current_page_counter += 1
+
+        print(f'Страница [{current_page_counter}/{page_count}]')
     else:
         print('У вас нет сохранённых заметок.')
 
@@ -105,4 +131,4 @@ if __name__ == '__main__':
     ]
 
     # Вызов функции отображения заметок
-    display_notes(notes_list, full_mode=True, sort_field_name='issue_date', sort_reverse=False)
+    display_notes(notes_list, full_mode=True, sort_field_name='created_date', sort_reverse=False, notes_per_page=2)
