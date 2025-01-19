@@ -10,74 +10,6 @@ Grade 1. Этап 2. Задание 5.
 Обновляет список заметок.
 """
 
-# Список текущих заметок
-notes = [
-    {
-        'ID': 1,
-        'username': 'Иван',
-        'titles': ['Учеба', 'Практика', 'Тестирование'],
-        'content': 'Обучение',
-        'status': 'Активна',
-        'created_date': '10-01-2025',
-        'issue_date': '15-01-2025',
-    },
-    {
-        'ID': 2,
-        'username': 'Петр',
-        'titles': ['Учеба', 'Практика', 'Тестирование'],
-        'content': 'Обучение',
-        'status': 'Активна',
-        'created_date': '26-12-2024',
-        'issue_date': '26-10-2025',
-    },
-    {
-        'ID': 3,
-        'username': 'Иван',
-        'titles': ['Путешествие', 'Рыбалка', 'Экскурсии'],
-        'content': 'Отдых',
-        'status': 'Активна',
-        'created_date': '01-01-2025',
-        'issue_date': '08-01-2025',
-    },
-    {
-        'ID': 4,
-        'username': 'Зинаида',
-        'titles': ['Учеба', 'Уроки'],
-        'content': 'Школа',
-        'status': 'Активна',
-        'created_date': '01-09-2024',
-        'issue_date': '25-12-2024',
-    },
-    {
-        'ID': 5,
-        'username': 'Петр',
-        'titles': ['Спорт', 'Пляж'],
-        'content': 'Отдых',
-        'status': 'Активна',
-        'created_date': '01-06-2025',
-        'issue_date': '24-06-2025',
-    },
-]
-
-
-def print_welcome() -> None:
-    """
-    Вывод приветствия для пользователя.
-
-    :return: None
-    """
-    print('\nДобро пожаловать в "Менеджер заметок"!')
-
-
-def print_notes_title() -> None:
-    """
-    Функция выводит заголовок списка заметок
-
-    :return: None
-    """
-    print('\nТекущий список заметок:')
-    print('-' * 60)
-
 
 def print_notes(notes_list: list) -> None:
     """
@@ -86,7 +18,8 @@ def print_notes(notes_list: list) -> None:
     :param notes_list:  list - список заметок
     :return: None
     """
-    print_notes_title()
+    print('\nТекущий список заметок:')
+    print('-' * 80)
 
     if len(notes_list) > 0:
         for note in notes_list:
@@ -102,31 +35,16 @@ def print_note(note: dict) -> None:
     :param note: dict - словарь содержащий данные заметки
     :return: None
     """
-    print('ID:', note['ID'])
     print('Имя пользователя:', note['username'])
-    print('Заголовки заметки:')
-
-    # Вывод списка заголовков в цикле
-    for index, title in enumerate(note['titles']):
-        print(f'\tЗаголовок {index + 1}: {title}')
+    print('Заголовок:', note['title'])
     print('Описание заметки:', note['content'])
 
-    print('-' * 60)
+    print('-' * 80)
 
 
-def get_delete_criteria() -> str:
+def delete_note(notes_) -> dict:
     """
-    Ввод критерия поиска
-
-    :return: Result: str - возврат введенного критерия
-    """
-    result = input('Введите имя пользователя или заголовок для удаления заметки. Enter - выход из программы: ')
-    return result
-
-
-def main_loop(notes) -> None:
-    """
-    Основной цикл программы
+    Удаление заметок.
 
     :return: None
     """
@@ -134,20 +52,21 @@ def main_loop(notes) -> None:
     message = ''  # сообщение пользователю
     while True:
         # Вывод списка заметок
-        print_notes(notes)
+        print_notes(notes_)
 
         if message:
             print(f'\n{message}')
 
         # Ввод критерия для удаления заметок
-        criteria = get_delete_criteria().strip().lower()
+        criteria = input(
+            'Введите имя пользователя или заголовок для удаления заметки. Enter - выход в главное меню: ').strip().lower()
 
         # Если пустой ввод тогда выход
         if not criteria:
             break
 
         # Получение списка ID заметок попадающий под критерий поиска
-        find_note_ids = find_note(criteria, notes)
+        find_note_ids = find_note(criteria, notes_)
 
         if find_note_ids:
             while True:
@@ -155,7 +74,7 @@ def main_loop(notes) -> None:
                     f'Критерий поиска "{criteria}": В списке найдено {len(find_note_ids)} {declension(len(find_note_ids))}. Вы уверены, что хотите их удалить? (да/нет): ').strip()
                 if answer.lower() == 'да':
                     # Удаление заметок из списка в соответствии списка ID и сохранение обновленного списка
-                    notes = delete_notes(find_note_ids, notes)
+                    notes_ = delete_notes(find_note_ids, notes_)
                     message = f'Удалено {len(find_note_ids)} {declension(len(find_note_ids))}'
                     break
                 elif answer.lower() == 'нет':
@@ -164,6 +83,8 @@ def main_loop(notes) -> None:
 
         else:
             message = f'Критерий поиска "{criteria}": Заметок с таким именем пользователя или заголовком не найдено.'
+
+    return notes_
 
 
 def delete_notes(find_note_ids: list, notes: list) -> list:
@@ -177,7 +98,7 @@ def delete_notes(find_note_ids: list, notes: list) -> list:
     new_notes = []
 
     for index, note in enumerate(notes):
-        if note['ID'] not in find_note_ids:
+        if index not in find_note_ids:
             new_notes.append(note)
 
     return new_notes
@@ -195,8 +116,8 @@ def find_note(criteria: str, notes: str) -> list:
     """
     result = []
     for key, note in enumerate(notes):
-        if note['username'].lower() == criteria or criteria in list(map(str.lower, note['titles'])):
-            result.append(note['ID'])
+        if note['username'].lower() == criteria or note['title'].lower() == criteria:
+            result.append(key)
 
     return result
 
@@ -225,19 +146,72 @@ def declension(number: int, one: str = 'заметка', four: str = 'замет
     return result
 
 
-def print_goodbye() -> None:
-    """
-    Выводит финальное сообщение
-
-    :return: None
-    """
-    print('До встречи!')
-
-
 if __name__ == '__main__':
+    def print_welcome() -> None:
+        """
+        Вывод приветствия для пользователя.
+
+        :return: None
+        """
+        print('\nДобро пожаловать в "Менеджер заметок"!')
+
+
+    def print_goodbye() -> None:
+        """
+        Выводит финальное сообщение
+
+        :return: None
+        """
+        print('До встречи!')
+
+
+    # Список текущих заметок
+    test_notes = [
+        {
+            'username': 'Иван',
+            'title': 'Практика',
+            'content': 'Обучение',
+            'status': 'Активна',
+            'created_date': '10-01-2025',
+            'issue_date': '15-01-2025',
+        },
+        {
+            'username': 'Петр',
+            'title': 'Учеба',
+            'content': 'Обучение',
+            'status': 'Активна',
+            'created_date': '26-12-2024',
+            'issue_date': '26-10-2025',
+        },
+        {
+            'username': 'Иван',
+            'title': 'Путешествие',
+            'content': 'Отдых',
+            'status': 'Активна',
+            'created_date': '01-01-2025',
+            'issue_date': '08-01-2025',
+        },
+        {
+            'username': 'Зинаида',
+            'title': 'Учеба',
+            'content': 'Школа',
+            'status': 'Активна',
+            'created_date': '01-09-2024',
+            'issue_date': '25-12-2024',
+        },
+        {
+            'username': 'Петр',
+            'title': 'Спорт',
+            'content': 'Отдых',
+            'status': 'Активна',
+            'created_date': '01-06-2025',
+            'issue_date': '24-06-2025',
+        },
+    ]
+
     # Вывод приветствия
     print_welcome()
     # Основной цикл программы
-    main_loop(notes)
+    delete_note(test_notes)
     # Финальное сообщение
     print_goodbye()
