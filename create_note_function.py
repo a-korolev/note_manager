@@ -14,19 +14,7 @@ Grade 1. Этап 3. Задание 1.
 from datetime import datetime
 from datetime import timedelta
 
-# # Константы
-# # TODO: move constants to a separate file
-# C_DATE_FORMAT: str = '%d-%m-%Y'
-# C_DATE_NOTE_PRINT_FORMAT: str = '%d-%m'
-# C_INPUT_TITLES = 'Ввод заголовков заметки:'
-# C_INPUT_TITLE = f'Введите заголовок (введите \'стоп\'' \
-#                 'или оставьте пустым для завершения: '
-# C_ALREADY_EXIST_TITLE = 'Внимание! Такой заголовок уже существует. Повторите ввод.'
-# C_EMPTY_STRING = ''
-# C_STOP_WORD = 'стоп'
-#
-# # Кортеж содержащий возможные статусы заметки
-# statuses = ('Новая', 'В процессе', 'Отложена', 'Выполнена')
+from constants import *
 
 
 def get_user_input(label: str = 'Введите данные: ') -> str:
@@ -43,41 +31,6 @@ def get_user_input(label: str = 'Введите данные: ') -> str:
         if not result:
             print('Это поле не может быть пустым')
     return result
-
-
-def get_user_input_titles() -> list:
-    """
-    Функция ввода заголовков и возврат их в списке.
-    Производит контроль на "дубли".
-
-    :return: titles: list - список введенных заголовков
-    """
-    # Инициализация переменных
-    titles = []
-
-    # Ввод заголовков в цикле
-    print(f'{C_INPUT_TITLES}')
-
-    while True:
-        title = input(f'{C_INPUT_TITLE}').strip()
-
-        # Проверка на ввод завершающий цикл
-        if title.lower() in (C_EMPTY_STRING, C_STOP_WORD):
-            if len(titles) == 0:
-                print('Введите минимум один заголовок.')
-                continue
-            else:
-                break
-
-        # Проверка на уникальность введенного заголовка
-        if title in titles:
-            print(f'{C_ALREADY_EXIST_TITLE}')
-            continue
-
-        # Добавление введенного заголовка в список
-        titles.append(title)
-
-    return titles
 
 
 def get_user_input_status(statuses_tuple) -> int:
@@ -98,7 +51,7 @@ def display_status_menu(statuses_tuple: tuple) -> None:
     :param statuses_tuple: tuple - кортеж с возможными значениями статусов
     :return: None
     """
-    print(f'Выберите статус заметки. Для ввода статуса по умолчанию \'{statuses[0]}\' нажмите Enter:')
+    print(f'Выберите статус заметки. Для ввода статуса по умолчанию \'{C_NOTE_STATUSES[0]}\' нажмите Enter:')
     for key, status in enumerate(statuses_tuple):
         print(f'{key + 1}. {status}')
 
@@ -120,7 +73,7 @@ def get_user_select_note_status(statuses_tuple: tuple) -> int:
                 break
         elif selected_status.replace(' ', '').isalnum():
             if selected_status in statuses_tuple:
-                selected_status = statuses.index(selected_status)
+                selected_status = C_NOTE_STATUSES.index(selected_status)
                 break
 
         print('Некорректный ввод статуса. Выберите номер статуса или введите его название.')
@@ -206,20 +159,20 @@ def create_note() -> dict:
 
     :return: dict - словарь содержащий данные созданной заметки
     """
-    print('Ввод новой заметки\n')
+    print('\nСоздание новой заметки\n')
 
     # Ввод данных заметки пользователем
     username = get_user_input('Введите имя пользователя: ')
-    titles = get_user_input_titles()
-    content = get_user_input('Введите описание заметки: ')
-    status = statuses[get_user_input_status(statuses)]
-    created_date = get_current_date()
-    issue_date = get_user_input_date('дедлайна', True, 7)
+    title = get_user_input('Введите заголовок: ')
+    content = get_user_input('Введите описание: ')
+    status = C_NOTE_STATUSES[get_user_input_status(C_NOTE_STATUSES)]
+    created_date = get_current_date().strftime(C_DATE_FORMAT)
+    issue_date = get_user_input_date('дедлайна', True, 7).strftime(C_DATE_FORMAT)
 
     # Создание и инициализация словаря для хранения данных заметки
     note = {
         'username': username,
-        'titles': titles,
+        'title': title,
         'content': content,
         'status': status,
         'created_date': created_date,
@@ -229,19 +182,6 @@ def create_note() -> dict:
 
 
 if __name__ == '__main__':
-    # Константы
-    C_DATE_FORMAT: str = '%d-%m-%Y'
-    C_DATE_NOTE_PRINT_FORMAT: str = '%d-%m'
-    C_INPUT_TITLES = 'Ввод заголовков заметки:'
-    C_INPUT_TITLE = f'Введите заголовок (введите \'стоп\'' \
-                    'или оставьте пустым для завершения: '
-    C_ALREADY_EXIST_TITLE = 'Внимание! Такой заголовок уже существует. Повторите ввод.'
-    C_EMPTY_STRING = ''
-    C_STOP_WORD = 'стоп'
-
-    # Кортеж содержащий возможные статусы заметки
-    statuses = ('Новая', 'В процессе', 'Отложена', 'Выполнена')
-
     # Создание новой заметки
     new_note = create_note()
 
