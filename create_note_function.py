@@ -52,8 +52,9 @@ def display_status_menu(statuses_tuple: tuple) -> None:
     :return: None
     """
     print(f'Выберите статус заметки. Для ввода статуса по умолчанию \'{C_NOTE_STATUSES[0]}\' нажмите Enter:')
-    for key, status in enumerate(statuses_tuple):
-        print(f'{key + 1}. {status}')
+    for key in range(1, len(C_NOTE_STATUSES)):
+        print(f'{key}. {C_NOTE_STATUSES[key]}')
+    print(f'0. {C_NOTE_STATUSES[0]}')
 
 
 def get_user_select_note_status(statuses_tuple: tuple) -> int:
@@ -68,8 +69,8 @@ def get_user_select_note_status(statuses_tuple: tuple) -> int:
         selected_status = input('Ваш выбор: ').strip()
 
         if selected_status.isdigit():
-            if 1 <= int(selected_status) <= len(statuses_tuple):
-                selected_status = int(selected_status) - 1
+            if 1 <= int(selected_status) < len(statuses_tuple):
+                selected_status = int(selected_status)
                 break
         elif selected_status.replace(' ', '').isalnum():
             if selected_status in statuses_tuple:
