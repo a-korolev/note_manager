@@ -13,13 +13,10 @@ Grade 1. Этап 3. Задание 2.
 Возвращается обновлённый словарь заметки.
 """
 from datetime import datetime
+from constants import *
 
 
-def get_user_input_end() -> None:
-    get_user_input_end_with_param(note)
-
-
-def get_user_input_end_with_param(note) -> None:
+def get_user_input_end(note, note_fields_updated) -> None:
     """
     Окончание ввода данных для обновления заметки и сохранение измененных полей при положительном ответе пользователя на запрос сохранения изменений
 
@@ -69,7 +66,7 @@ def get_user_input(label: str = 'Введите данные: ') -> str:
     return result
 
 
-def get_user_input_username() -> str:
+def get_user_input_username(note=None, note_fields_updated=None) -> str:
     """
     Ввод имени пользователя
 
@@ -78,7 +75,7 @@ def get_user_input_username() -> str:
     return get_user_input('Введите имя пользователя: ')
 
 
-def get_user_input_title() -> str:
+def get_user_input_title(note=None, note_fields_updated=None) -> str:
     """
     Ввод заголовка
 
@@ -87,7 +84,7 @@ def get_user_input_title() -> str:
     return get_user_input('Введите заголовок: ')
 
 
-def get_user_input_content() -> str:
+def get_user_input_content(note=None, note_fields_updated=None) -> str:
     """
     Ввод содержания
 
@@ -96,7 +93,7 @@ def get_user_input_content() -> str:
     return get_user_input('Введите содержание: ')
 
 
-def get_user_input_satus() -> str:
+def get_user_input_satus(note=None, note_fields_updated=None) -> str:
     """
     Отображение меню и ввод пользователем статуса
 
@@ -112,7 +109,7 @@ def get_user_input_satus() -> str:
     if status_id == 0:
         return ''
     else:
-        return statuses[status_id]
+        return C_NOTE_STATUSES[status_id]
 
 
 def get_user_input_issue_date() -> str:
@@ -182,9 +179,9 @@ def print_status_menu() -> None:
     :return: None
     """
     print('Выберите новый статус заметки. Для отмены изменения статуса выберите \'0\' или нажмите Enter:')
-    for key in range(1, len(statuses)):
-        print(f'{key}. {statuses[key]}')
-    print('0. Отменить ввод')
+    for key in range(1, len(C_NOTE_STATUSES)):
+        print(f'{key}. {C_NOTE_STATUSES[key]}')
+    print(f'0. {C_NOTE_STATUSES[0]}')
 
 
 def select_note_status() -> int:
@@ -202,16 +199,16 @@ def select_note_status() -> int:
             selected_status = 0
             break
         if selected_status.isdigit():
-            if int(selected_status) < len(statuses):
+            if int(selected_status) < len(C_NOTE_STATUSES):
                 selected_status = int(selected_status)
                 break
         elif selected_status.replace(' ', '').isalnum():
-            if selected_status in statuses:
-                selected_status = statuses.index(selected_status)
+            if selected_status in C_NOTE_STATUSES:
+                selected_status = C_NOTE_STATUSES.index(selected_status)
                 break
 
         print_status_menu()
-        print(f'Выбран некорректный статус. Введите номер статус или его название из списка {str(statuses)}.')
+        print(f'Выбран некорректный статус. Введите номер статус или его название из списка {str(C_NOTE_STATUSES)}.')
 
     return selected_status
 
@@ -252,7 +249,7 @@ def display_update_fields_menu(note_fields):
     """
     Вывод меню выбора поле заметки для обновления
 
-    :param statuses_tuple: tuple - кортеж с возможными значениями статусов
+    :param note_fields: tuple - кортеж с возможными значениями статусов
     :return: None
     """
     print(f'Список полей заметки для обновления')
@@ -300,10 +297,16 @@ def update_note(note) -> dict:
     :param note: dict - словарь с данными заметки для обновления
     :return: обновленная заметка
     """
+
+    print('\nОбновление заметки\n')
+
+    # Словарь с измененными полями заметки
+    note_fields_updated = {}
+
     while True:
         display_update_fields_menu(note_fields)
         user_choice_field = get_user_choice_field()
-        user_choice_data = note_fields[user_choice_field]['field_input_fn']()
+        user_choice_data = note_fields[user_choice_field]['field_input_fn'](note, note_fields_updated)
 
         if user_choice_field == 0:
             break
@@ -314,11 +317,8 @@ def update_note(note) -> dict:
 
 
 if __name__ == '__main__':
-    # Константы
-    C_DATE_FORMAT: str = '%d-%m-%Y'
-
     # Словарь с данными заметки
-    note = {
+    note_for_update = {
         'username': 'Иван',
         'title': 'Отдых',
         'content': 'Путешествие, рыбалка, экскурсии',
@@ -327,17 +327,11 @@ if __name__ == '__main__':
         'issue_date': '08-01-2025',
     }
 
-    # Словарь с измененными полями заметки
-    note_fields_updated = {}
-
-    # Кортеж содержащий возможные статусы заметки
-    statuses = ('Отменить ввод', 'Активна', 'В процессе', 'Отложено', 'Выполнено')
-
     print('\nОбновление заметки')
 
     # Вывод данных заметки до обновления
-    display_note(note, C_DATE_FORMAT)
+    display_note(note_for_update, C_DATE_FORMAT)
     # Обновление заявки
-    updated_note = update_note(note)
+    updated_note = update_note(note_for_update)
     # Вывод данных заметки после обновления
     display_note(updated_note, C_DATE_FORMAT)
